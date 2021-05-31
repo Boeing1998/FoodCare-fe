@@ -1,0 +1,101 @@
+.Login {
+  display: flex;
+  height: 100vh;
+}
+
+.LoginLeft {
+  flex: 0.7 1;
+  background-image: url(https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80);
+  background-size: cover;
+  background-position: top;
+  padding: 3rem;
+  position: relative;
+}
+
+.LoginRight {
+  flex: 0.3 1;
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+}
+
+.LoginRightHeader {
+  flex: 0.2 1;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.LoginRightHeader > p {
+  display: inline;
+  margin-right: 10px;
+  color: var(--color-dark-tertiary);
+  font-weight: 500;
+}
+
+.LoginRightHeader > a {
+  text-decoration: none;
+  background-color: var(--color-light-primary);
+  outline: none;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--color-dark-primary);
+  color: inherit;
+  font-weight: 500;
+  font-size: 1.7rem;
+  transition: all 0.5s;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.LoginRightTitle {
+  flex: 0.2 1;
+  margin-bottom: 3rem;
+}
+
+.LoginRightTitle > h3 {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.LoginRightTitle > p {
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.LoginField {
+  position: relative;
+}
+
+.LoginField > label {
+  display: block;
+  text-transform: capitalize;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+.LoginField > input {
+  outline: none;
+  border: none;
+  border-bottom: 1px solid var(--color-dark-tertiary);
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  text-transform: lowercase;
+}
+
+.LoginSubmit {
+    width: 100%;
+    padding: 0.2rem;
+    outline: none;
+    background-color: var(--color-button);
+    color: var(--color-light-primary);
+    border: none;
+    border-radius: .2rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+    margin-top: 30px;
+}

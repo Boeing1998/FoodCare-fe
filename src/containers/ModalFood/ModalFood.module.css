@@ -1,0 +1,86 @@
+.Image {
+  width: 100%;
+  max-height: 350px;
+  border-radius: 5%;
+}
+
+.Container {
+  padding-top: 15px;
+}
+
+.IconContainer {
+  margin-top: 17px;
+}
+
+.Icon {
+  height: 28px;
+  width: 28px;
+  margin: 15px 20px 5px 5px;
+}
+
+.Button {
+  cursor: pointer;
+}
+
+.Detail {
+  justify-content: flex-start !important;
+}
+
+.Ingredient {
+  height: 70px;
+  padding-top: 5px;
+  display: inline-block;
+  width: 100%;
+  padding-left: 15px;
+}
+
+.IngreImg {
+  height: auto;
+  max-width: 50px;
+}
+
+.Ingredient label {
+  padding-left: 20px;
+  font-weight: 400;
+  width: 200px;
+  text-align: unset;
+}
+
+.CaloriesTitle {
+  text-align: center;
+  padding-bottom: 5px;
+}
+
+.justify_content_center {
+  -webkit-box-pack: center !important;
+  -ms-flex-pack: center !important;
+  justify-content: center !important;
+}
+
+.stats_output {
+  font-weight: bold;
+}
+
+.Mr {
+  margin-right: auto !important;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.Step {
+  padding-right: 30px;
+}
