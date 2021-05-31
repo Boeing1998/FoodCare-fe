@@ -1,0 +1,158 @@
+.Container {
+  padding-top: 30px;
+}
+
+.Container > * {
+  letter-spacing: 0.3px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.TitleContainer {
+  padding-left: 50px;
+  padding-right: 50px;
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.Title {
+  padding-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.Col {
+  flex: 0 0 100%;
+  max-width: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.SectionHeader {
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.BodyContainer {
+  margin-left: 0;
+  padding-right: 50px;
+  padding-left: 50px;
+  max-width: 91160px;
+  width: 100%;
+}
+
+.Row3 {
+  margin-bottom: 1rem;
+  display: flex;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.Col12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 0px;
+}
+
+.Col12 div {
+  margin-right: 10px;
+}
+
+.Row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.SearchContainer {
+  width: 100% !important;
+  max-width: 960px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.Col {
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+}
+
+.SearchBar {
+  padding-left: 30px;
+  width: 100%;
+  height: 2.5rem;
+}
+
+.SelectionContainer {
+  padding-top: 10px;
+  /* align-items: center !important;
+  justify-content: center !important; */
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -30px;
+}
+
+.FoodFilter {
+  font-size: small;
+  max-width: 25%;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  flex-direction: row;
+}
+
+.ResultContainer {
+  margin-left: 0;
+  max-width: 960px;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 0;
+  margin-right: auto;
+  margin-bottom: 30px;
+}
+
+.Loading {
+  margin-top: 70px;
+}
+
+.FoodContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.FoodContainer > * {
+  flex: 0 1 23.2%;
+}
+
+.Button {
+  align-items: center;
+  margin: 20;
+  display: block;
+}
