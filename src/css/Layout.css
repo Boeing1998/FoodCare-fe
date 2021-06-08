@@ -1,0 +1,20 @@
+:root{
+    --offcanvas-width : 270px;
+    --topNavbarHeight : 56px;
+}
+.slide-nav{
+    width : var(--offcanvas-width)
+}
+.modal-backdrop.show{
+    opacity: 0 !important;
+}
+
+.slidebar-nav{
+    transform: none;
+    visibility: visible !important;
+    top:56px;
+    height: calc(100% - 56px);
+}
+nav#header-admin,div.offcanvas-body{
+    background : #343a40 !important
+  }

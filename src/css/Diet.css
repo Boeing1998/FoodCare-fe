@@ -1,0 +1,27 @@
+svg{
+    height: 50px;
+    width: 60px;
+}
+.carbs-col {
+    color: #FCB524;
+}
+.fats-col {
+    color: #52C0BC;
+}
+.proteins-col {
+    color: #976fe8;
+}
+ a.tab-diet{
+    color: black;
+    font-size: 25px;
+    text-decoration: none;
+}
+ a.tab-diet.active{
+    color: #F0754F;
+    border-bottom: 4px solid #F0754F;
+}
+ a.tab-diet:hover{
+    color: #F0754F;
+    border-bottom: 4px solid #F0754F;
+}
+

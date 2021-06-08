@@ -1,0 +1,10 @@
+.modal-footer, .modal-body,.modal-header, form{
+    border:unset
+}
+#Type  {
+    max-width: 45%;
+    margin: 1.75rem auto;
+    top: 20%;
+}
+
+  

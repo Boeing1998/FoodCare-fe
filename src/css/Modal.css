@@ -1,0 +1,42 @@
+#Diet .modal-footer,#Diet .modal-body,#Diet .modal-header, form{
+    border:none;
+}
+#Meals{
+    max-width: 30%;
+    margin: 1.75rem auto;
+    top: 30%;
+   
+}
+#Meals .modal-header,#Meals .form-horizontal, #Meals .modal-footer{
+    border: none;
+}
+#Type  {
+    top: 30%;
+    max-width: 30%;
+    margin: 1.75rem auto;
+    border: none;
+}
+#Type .modal-header,#Type .form-horizontal, #Type .modal-footer{
+    border: none;
+}
+#Type li {
+    list-style: none;
+}
+#Diet   {
+    max-width: 45% !important;
+    margin: 1.75rem auto !important
+}
+.addMeal{
+    border: unset;
+}
+.css-sox5kk-MuiBackdrop-root{
+    background: transparent !important;
+}
+.modal-backdrop.show{
+    opacity: 0 !important;
+}
+div#check{
+    /* position: unset !important; */
+    opacity: 0.4;
+}
+  
