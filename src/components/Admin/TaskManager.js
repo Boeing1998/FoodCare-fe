@@ -9,23 +9,39 @@ class TaskManager extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: [], data1: {}, request: '', custom: '', message: ''
+            data: [], data1: {}, request: '', custom: '', message: '', page: 0
         }
     }
+    // componentDidMount = async () => {
+    //     const confiq = await {
+    //         headers: {
+    //             Authorization: 'Bearer ' + localStorage.getItem('token'),
+    //         }
+    //     }
+    //     // let key = await `?&page=${this.state.page}&type=all&limit=6`
+    //     let key = await `?page=${this.state.page}&type=all&limit=6`
+    //     await axios.get(USER_ROUTES.FOODSFORADMIN + key, confiq)
+    //         .then(res => {
+    //             const randomData = _.shuffle(res.data.data)
+    //             this.setState({
+    //                 data: randomData,
+    //                 dataFilter: randomData
+    //             })
+    //         })
+    // }
     componentDidMount = async () => {
         const confiq = await {
             headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
+                Authorization: 'token ' + localStorage.getItem('token'),
             }
         }
-        // let key = await `?&page=${this.state.page}&type=all&limit=6`
-        let key = await `?page=${this.state.page}&type=all&limit=6`
-        await axios.get(USER_ROUTES.FOODSFORADMIN + key, confiq)
+        let key = `/show?&page=${this.state.page}&type=all&limit=6`
+        await axios.get(USER_ROUTES.FOODS + key, confiq)
             .then(res => {
-                const randomData = _.shuffle(res.data.data)
+                console.log(res.data)
+                const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
                 this.setState({
-                    data: randomData,
-                    dataFilter: randomData
+                    data: orderBy,
                 })
             })
     }
@@ -33,6 +49,44 @@ class TaskManager extends Component {
         this.setState({
             [e.target.name]: e.target.value,
         })
+    }
+    onNextPage = async () => {
+        await this.setState({
+            page: this.state.page + 1
+        })
+        const confiq = await {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token'),
+            }
+        }
+        let key = await `/show/?&page=${this.state.page}&type=all&limit=6`
+        await axios.get(USER_ROUTES.FOODS + key, confiq)
+            .then(res => {
+                console.log(res.data)
+                const randomData = _.shuffle(res.data.data)
+                this.setState({
+                    data: randomData
+                })
+            })
+    }
+    onPreviousPage = async () => {
+        await this.setState({
+            page: this.state.page - 1
+        })
+        const confiq = await {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('token'),
+            }
+        }
+        let key = await `/show/?&page=${this.state.page}&type=all&limit=6`
+        await axios.get(USER_ROUTES.FOODS + key, confiq)
+            .then(res => {
+                console.log(res.data)
+                const randomData = _.shuffle(res.data.data)
+                this.setState({
+                    data: randomData
+                })
+            })
     }
     onSetRequest = async (foodItem) => {
         const confiq = {
@@ -42,23 +96,23 @@ class TaskManager extends Component {
         }
         const data = {
             foodId: foodItem._id,
-            custom: foodItem.custom,
-            request: foodItem.request
+            custom: false,
+            request: false
         }
-
-        axios.patch(USER_ROUTES.EDITFOOD, data, confiq)
+        await axios.patch(USER_ROUTES.EDITFOOD, data, confiq)
+        this.setState({
+            data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key)
+        })
+        let key = '/show?limit=6'
+        axios.get(USER_ROUTES.FOODS + key, confiq)
             .then(res => {
+                const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
                 this.setState({
-                    data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key)
+                    data: orderBy,
                 })
             })
+
     }
-    // onChangeRequest = async (foodItem) => {
-    //     this.setState({
-    //         data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key)
-    //     })
-    //     this.onSetRequest(foodItem._id, foodItem.custom, foodItem.request)
-    // }
 
     onDetail = (idFood) => {
         axios.get(USER_ROUTES.FOODS + idFood)
@@ -103,7 +157,7 @@ class TaskManager extends Component {
                                         </div>
                                     </div>
                                     <div className="modal-footer">
-                                        <button type="submit" className="btn btn-secondary" data-dismiss="modal">Send</button>
+                                        <button type="submit" className="btn btn-secondary" data-dismiss="modal" >Send</button>
                                     </div>
                                 </div>
                             </div>
@@ -127,9 +181,17 @@ class TaskManager extends Component {
             message: this.state.message
         }
         await axios.patch(USER_ROUTES.EDITFOOD, data, confiq)
+        this.setState({
+            data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key),
+            open: false
+        })
+
+        let key = '/show?limit=6'
+        axios.get(USER_ROUTES.FOODS + key, confiq)
             .then(res => {
+                const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
                 this.setState({
-                    data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key)
+                    data: orderBy,
                 })
             })
     }
@@ -138,10 +200,11 @@ class TaskManager extends Component {
         if (data) {
             if (data.length > 0) {
                 return data.map((key, index) => {
+                    
                     return (
-                        // className={key.request == false ? `d-none` : ''}
-                        <tr key={index} className={key.request == false ? `d-none` : ''}>
-                            <td className="text-left" ><img src={`https://images.eatthismuch.com${key.images.thumbnail}`} style={{ width: '80px', height: '80px' }} /></td>
+                        // className={key.custom == true ? `d-block` : 'd-none'}
+                        <tr key={index} >
+                            <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
                             <td className="text-left">{key.nutrions.calories}</td>
                             <td className="text-left">{key.nutrions.carbs}</td>
@@ -150,8 +213,8 @@ class TaskManager extends Component {
                             <td><button className="btn btn-primary " type="click"
                                 onClick={() => this.onSetRequest({
                                     ...key,
-                                    custom: key.custom == false ? true : false,
-                                    request: key.request == false ? true : false
+                                    custom: key.custom == true ? false : true,
+                                    request: key.request == true ? false : true
                                 })}>Approve</button></td>
                             <td><button className="btn btn-danger " type="click"
                                 onClick={() => {
@@ -161,11 +224,21 @@ class TaskManager extends Component {
                                     })
                                 }}>Decline</button>
                                 {this.onModal()}
+
                             </td>
                         </tr>
 
                     )
                 })
+            } else {
+                return  <tr>
+                <div className="col-12" style={{ left: '160%', top: '1px' }}>
+                    <button className="btn btn-primary" type="button" disabled>
+                        <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
+        Loading...
+    </button>
+                </div>
+            </tr>
             }
         }
     }
@@ -174,12 +247,11 @@ class TaskManager extends Component {
             <section id="shopping-cart " style={{ marginLeft: '230px' }}>
                 <div className="row g-0" >
                     {/* g-0 == gutter = scrollX = 0  */}
-                    <div className="col-12">
-                        <div className="card border-0">
-                            <div className="card-header border-0 p-0">
-                                <h4 className="card-title">Manage Food</h4>
+                    <div className="col-12 ">
+                        <div className="row border-0 bg-white">
+                            <div className="card-content col-2 pt-5 pl-4">
+                                <h4 className="card-title">Task Manager</h4>
                             </div>
-
                         </div>
                     </div>
                     <div className="col-12">
@@ -200,6 +272,7 @@ class TaskManager extends Component {
                                             </tr>
                                         </thead>
                                         <tbody>
+                                           
                                             {this.renderFood()}
                                         </tbody>
                                     </table>
@@ -207,15 +280,15 @@ class TaskManager extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row pt-3">
                         <ul className="pagination justify-content-start col-6">
-                            <li className={this.state.page > 1 ? 'page-item col-2 ml-4 text-center' : 'page-item col-2 disabled ml-4 text-center'}>
-                                <Link to={`/admin/food/page${this.state.page - 1}`} className="page-link" >Previous</Link>
+                            <li className={this.state.page >= 1 ? 'page-item col-2 ml-4 text-center' : 'page-item col-2 disabled ml-4 text-center'}>
+                                <Link to={`/admin/task/page${this.state.page - 1}`} className="page-link" onClick={() => this.onPreviousPage()}>Previous</Link>
                             </li>
                         </ul>
                         <ul className="pagination justify-content-end col-6">
                             <li className="page-item col-2 text-center">
-                                <Link to={`/admin/food/page${this.state.page + 1}`} className="page-link text-center" >Next</Link>
+                                <Link to={`/admin/task/page${this.state.page + 1}`} className="page-link text-center" onClick={() => this.onNextPage()}>Next</Link>
                             </li>
                         </ul>
                     </div>

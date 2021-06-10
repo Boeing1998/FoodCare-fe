@@ -1,6 +1,10 @@
 import axios from 'axios'
 import React, { Component } from 'react'
-var check = []
+import { USER_ROUTES } from '../../constants/routes'
+import { Modal } from '@material-ui/core'
+import '../../css/ManageUser.css'
+import '../../css/Modal.css'
+import { Link, withRouter } from 'react-router-dom'
 class ManageUser extends Component {
     constructor(props) {
         super(props)
@@ -8,12 +12,18 @@ class ManageUser extends Component {
             data: [],
             page: 1,
             hide: false,
+            openModal: false,
+            idUser: ''
         }
-        this.onSelectedDelete = this.onSelectedDelete.bind(this)
     }
     componentDidMount() {
-
-        axios.get(`https://reqres.in/api/users?page=${this.state.page}`)
+        const confiq = {
+            headers: {
+                'Authorization': 'token ' + localStorage.getItem('token')
+            }
+        }
+        let key = `?&page=0&limit=6`
+        axios.get(USER_ROUTES.LISTUSER + key, confiq)
             .then(res => {
                 this.setState({
                     data: res.data.data
@@ -38,76 +48,122 @@ class ManageUser extends Component {
                 })
             })
     }
-    onDelete = async (id) => {
-        this.setState({
-            data: this.state.data.filter((arr) => arr.id !== id)
-        })
-        for (let i = 0; i < this.state.data.length; i++) {
-            if (this.state.data[i].id == id) {
-                this.state.data.splice(i, 1)
-                this.setState({
-                    data: this.state.data
-                })
+    onDeleteUser = async () => {
+
+        const confiq = {
+            headers: {
+                'Authorization': 'token ' + localStorage.getItem('token')
             }
         }
-    }
-    onSelectedDelete = async () => {
-        for (let i = 0; i < check.length; i++) {
-            await this.setState({
-                data: this.state.data.filter((arr) => arr.id !== check[i]),
+        let key = await `/${this.state.idUser}/delete`
+        await axios.delete(USER_ROUTES.BANUSER + key, confiq)
+            .then(res => {
+                console.log(res.data)
             })
-        }
-    }
-    onSelect = (id) => {
-        let arr = this.state.data.find(arr => arr.id == id)
-        if (this.onCheckExist(arr.id) == false) {
-            check.push(arr.id)
-        } else {
-            check.map((key, index) => {
-                if (key == id) {
-                    check.splice(index, 1)
-                }
+        let key1 = await `?&page=0&limit=6`
+        await axios.get(USER_ROUTES.LISTUSER + key1, confiq)
+            .then(res => {
+                this.setState({
+                    data: res.data.data
+                })
             })
-        }
+
     }
-    onCheckExist = (id) => {
-        let idUser = check.find(arr => arr == id)
-        if (idUser) {
-            return true
+    openModal = () => {
+        return <Modal
+            open={this.state.openModal}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            id="check"
+        >
+            <div className="modal" style={{ display: 'block' }} tabIndex="-1" role="dialog">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Do you want delete this account</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close"
+                                onClick={() => this.setState({
+                                    openModal: false,
+
+                                })}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <p className="d-block mx-auto" style={{ color: 'green', fontSize: '18px' }}>{this.state.noti}</p>
+
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-dismiss="modal"
+                                onClick={() => this.setState({
+                                    openModal: false
+                                })}>Cancel</button>
+                            <button type="button" className="btn btn-danger" data-dismiss="modal"
+                                onClick={() => {
+                                    this.setState({
+                                        openModal: false,
+                                    }); this.onDeleteUser()
+                                }}>Delete account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+
+    }
+    onBanned = async (idUser) => {
+        console.log(idUser)
+        const confiq = {
+            headers: {
+                'Authorization': 'token ' + localStorage.getItem('token')
+            }
         }
-        return false
+        let key = `/${idUser}/ban`
+        axios.patch(USER_ROUTES.BANUSER + key, {}, confiq)
+            .then(res => {
+                console.log(res.data)
+            })
+
+        let key1 = await `?&page=0&limit=6`
+        await axios.get(USER_ROUTES.LISTUSER + key1,{}, confiq)
+            .then(res => {
+                this.setState({
+                    data: res.data.data
+                })
+            })
     }
     renderData = () => {
         let data = this.state.data
         if (data.length > 0) {
             return data.map((key, index) => {
                 return (
-                    <tr key={index}>
-                        <td>
-                            <span className="custom-checkbox">
-                                <input type="checkbox"
-                                    aria-label="Checkbox for following text input"
-                                    onClick={() => this.onSelect(key.id)}
-                                // checked={true}
-                                />
-                            </span>
-                        </td>
-                        <td>{key.first_name + " " + key.last_name}</td>
-                        <td>{key.email}</td>
-                        <td><img src={key.avatar} alt="#" style={{ width: '75px' }} /></td>
-                        <td>
-                            <a href="#editEmployeeModal"
-                                className="edit mr-3" data-toggle="modal">
-                                <i className="bi bi-x-circle-fill text-warning" />
-                            </a>
-                            <a href="#deleteEmployeeModal"
-                                className="delete" data-toggle="modal" onClick={() => this.onDelete(key.id)}>
-                                <i className="bi bi-trash-fill text-danger" />
-                            </a>
-                        </td>
-                    </tr>
+                        <tr key={index} >
+                            <td><img src={key.avatarUrl} alt="#" style={{ width: '75px' }} /></td>
+                            <td>{key.email} {key.isBanned == true ? <b>(is Banned)</b> : null}</td>
+                            <td >
+                                <a href=" "
+                                    className="edit mr-3" data-toggle="modal" onClick={() => this.onBanned(key._id)}>
+                                    <i className="bi bi-x-circle-fill text-warning ml-3 " />
+                                </a>
+                            </td>
+                            <td >
+                                <a href=" "
+                                    className="delete" data-toggle="modal"
+                                    onClick={() => this.setState({
+                                        openModal: true, idUser: key._id
+                                    })}>
+                                    <i className="bi bi-trash-fill text-danger ml-4" />
+                                </a>
+                                {this.openModal()}
+                            </td>
+                        </tr>
                 )
             })
+        } else {
+            return <div className="col-12"
+                style={{ left: '140%', top: '15px' }}>
+                <button className="btn btn-primary" type="button" disabled>
+                    <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
+                    Loading...
+                </button></div>
         }
     }
     render() {
@@ -118,46 +174,46 @@ class ManageUser extends Component {
                         <div className="table-title">
                             <div className="row">
                                 <div className="col-sm-9">
-                                    <h2>Manage <b>Employees</b></h2>
-                                </div>
-                                <div className="col-sm-3">
-                                    <a href="#addEmployeeModal" className="btn btn-success mr-2" data-toggle="modal"> <span>Banned user</span></a>
-                                    <a href="#deleteEmployeeModal" className="btn btn-danger" data-toggle="modal"
-                                        onClick={() => this.onSelectedDelete(check)}> <span>Delete</span></a>
+                                    <h2>Manage Users</h2>
                                 </div>
                             </div>
                         </div>
-                        <div className="clearfix  mt-4">
-                            <nav aria-label="Page navigation example row">
-                                <ul className="pagination">
-                                    <li className={`page-item ${this.state.page > 1 ? '' : 'disabled'} col-1 pr-2`} >
-                                        <a className="page-link" href="#" tabIndex="-1" aria-disabled="true" onClick={() => this.onPreviousPage()}>Previous</a>
-                                    </li>
-                                    <li className="page-item ml-auto col-1 pr-2 text-center">
-                                        <a className="page-link" href="#" onClick={() => this.onNextPage()}>Next</a>
-                                    </li>
-                                </ul>
-                                <ul className="pagination  ">
 
-                                </ul>
-                            </nav>
-                        </div>
                         <table className="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th> </th>
-                                    <th>Name</th>
-                                    <th>Email</th>
                                     <th>Image</th>
-                                    <th>Actions</th>
+                                    <th>Email</th>
+                                    <th>Ban user</th>
+                                    <th>Delete user</th>
                                 </tr>
                             </thead>
                             <tbody>
+
                                 {this.renderData()}
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <div className="row">
+                        <ul className="pagination justify-content-start col-6">
+                            <li className={this.state.page > 1 ? 'page-item col-2 ml-4 text-center' : 'page-item col-2 disabled ml-4 text-center'}>
+                                <Link
+                                    to={`/admin/user/page${this.state.page - 1}`}
+                                    className="page-link"
+                                    onClick={() => this.onPreviousPage()}>Previous</Link>
+                            </li>
+                        </ul>
+                        <ul className="pagination justify-content-end col-6">
+                            <li className="page-item col-2 text-center">
+                                <Link
+                                    to={`/admin/user/page${this.state.page + 1}`}
+                                    className="page-link text-center"  onClick={() => this.onNextPage()} >Next
+                                
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
             </div>
         )
     }

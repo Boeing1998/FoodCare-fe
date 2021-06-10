@@ -23,8 +23,8 @@ class ManageFood extends Component {
         super(props)
         this.state = {
             data: [], data1: {}, page: 1, open: false, open1: false, food_name: '', calories: '', carbs: '', fats: '', proteins: '',
-            food_nameErr: '', caloriesErr: '', carbsErr: '', fatsErr: '', proteinsErr: '', noti: '', images: {}, thumbnail: '', 
-            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter:[]
+            food_nameErr: '', caloriesErr: '', carbsErr: '', fatsErr: '', proteinsErr: '', noti: '', images: {}, thumbnail: '',
+            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter: [], custom: true, request: true
         }
     }
     componentDidMount = async () => {
@@ -40,27 +40,13 @@ class ManageFood extends Component {
                 const randomData = _.shuffle(res.data.data)
                 this.setState({
                     data: randomData,
-                    dataFilter:randomData
+                    dataFilter: randomData
                 })
             })
     }
-    // componentDidMount = async () => {
-    //     const confiq = await {
-    //         headers: {
-    //             Authorization: 'token ' + localStorage.getItem('token'),
-    //         }
-    //     }
-    //     let key = 'show?limit=100'
-    //     await axios.get(USER_ROUTES.FOODS + key, confiq)
-    //         .then(res => {
-    //             const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
-    //             this.setState({
-    //                 data: orderBy,
-    //             })
-    //         })
-    // }
 
     onNextPage = async () => {
+        
         await this.setState({
             page: this.state.page + 1
         })
@@ -101,6 +87,7 @@ class ManageFood extends Component {
         this.setState({
             [e.target.name]: e.target.value,
         })
+        console.log(e.target.value)
     }
 
     onDelete = async (e, id) => {
@@ -112,7 +99,7 @@ class ManageFood extends Component {
         }
         await axios.patch(USER_ROUTES.DELETEFOODS + id, {}, confiq)
 
-        let key = await `?&page=${this.state.page}&type=all&limit=3`
+        let key = await `?&page=${this.state.page}&type=all&limit=6`
         await axios.get(USER_ROUTES.FOODSFORADMIN + key, confiq)
             .then(res => {
                 this.setState({
@@ -178,14 +165,15 @@ class ManageFood extends Component {
             }
             let data = {
                 food_name: this.state.food_name,
-                images: {
-                    thumbnail: this.state.thumbnail
-                },
+                custom: this.state.custom,
+                request: this.state.request,
+                image: this.state.thumbnail,
                 nutrions: {
                     calories: this.state.calories,
                     carbs: this.state.carbs,
                     fats: this.state.fats,
-                    proteins: this.state.proteins
+                    proteins: this.state.proteins,
+
                 }
             }
             await axios.post(USER_ROUTES.CREATEFOODS, data, confiq)
@@ -197,9 +185,10 @@ class ManageFood extends Component {
                     }
                 })
 
-            let key = await `?&page=${this.state.page}&type=all&limit=3`
+            let key = await `?&page=${this.state.page}&type=all&limit=6`
             await axios.get(USER_ROUTES.FOODSFORADMIN + key, confiq)
                 .then(res => {
+                    console.log(res.data)
                     const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
                     this.setState({
                         data: orderBy,
@@ -327,37 +316,32 @@ class ManageFood extends Component {
             data: this.state.data.map((key) => key._id === foodItem._id ? foodItem : key)
         })
         this.onSetStatus(foodItem._id, foodItem.status)
-        console.log(this.state.data)
     }
     onSelectStatus = async (e) => {
-        if(e.target.value == 1){
+        if (e.target.value == 1) {
             this.setState({
-                data : this.state.dataFilter
+                data: this.state.dataFilter
             })
-        }else{
+        } else {
             this.setState({
-                data : this.state.dataFilter.filter((items) => items.status == e.target.value)
+                data: this.state.dataFilter.filter((items) => items.status == e.target.value)
             })
-            console.log(this.state.dataFilter)
-            console.log(this.state.dataFilter.filter((items) => items.status == e.target.value))
         }
-       
-       
     }
     renderFood() {
         let data = this.state.data
         if (data) {
             if (data.length > 0) {
                 return data.map((key, index) => {
-                    console.log(key.status)
+                    console.log()
                     return (
                         <tr key={index}>
-                            <td className="text-left" ><img src={`https://images.eatthismuch.com${key.images.thumbnail}`} style={{ width: '80px', height: '80px' }} /></td>
+                            <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
-                            <td className="text-left">{key.nutrions.calories}</td>
-                            <td className="text-left">{key.nutrions.carbs}</td>
-                            <td className="text-left">{key.nutrions.fats}</td>
-                            <td className="text-left">{key.nutrions.proteins}</td>
+                            <td className="text-left">{(key.nutrions.calories).toFixed(2)}</td>
+                            <td className="text-left">{(key.nutrions.carbs).toFixed(2)}</td>
+                            <td className="text-left">{(key.nutrions.fats).toFixed(2)}</td>
+                            <td className="text-left">{(key.nutrions.proteins).toFixed(2)}</td>
                             <td className="text-left col-1">
                                 {key.status !== 'show' ? <label className="text-secondary">Unactive</label> : <label className="text-success">Active</label>}
                             </td>
@@ -383,22 +367,31 @@ class ManageFood extends Component {
 
                             <td className="text-left" onClick={(e) => this.onDelete(e, key._id)} ><i className="bi bi-trash-fill btn btn-dark" onClick={deleteNotify} /></td>
                             <td>
-                            <ToastContainer
-                                position="top-right"
-                                autoClose={3000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                            />
+                                <ToastContainer
+                                    position="top-right"
+                                    autoClose={3000}
+                                    hideProgressBar={false}
+                                    newestOnTop={false}
+                                    closeOnClick
+                                    rtl={false}
+                                    pauseOnFocusLoss
+                                    draggable
+                                    pauseOnHover
+                                />
                             </td>
                         </tr>
 
                     )
                 })
+            } else {
+                return <tr>
+                    <div className="col-12" style={{ left: '250%', top: '6px' }}>
+                        <button className="btn btn-primary" type="button" disabled>
+                            <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
+                                        Loading...
+                                    </button>
+                    </div>
+                </tr>
             }
         }
     }
@@ -406,22 +399,34 @@ class ManageFood extends Component {
         return (
             <section id="shopping-cart " style={{ marginLeft: '230px' }}>
                 <div className="row g-0" >
-                    {/* g-0 == gutter = scrollX = 0  */}
-                    <div className="col-12">
-                        <div className="card border-0">
-                            <div className="card-header border-0 p-0">
+                    <div className="col-12 ">
+                        <div className="row border-0 bg-white">
+                            <div className="card-content col-2 pt-5 pl-4">
                                 <h4 className="card-title">Manage Food</h4>
                             </div>
-                            <div className="card-content ml-auto col-2">
+                            <div className="card-content ml-auto col-4 pt-5 ">
                                 <div className="card-body table-responsive p-0">
-                                    <ul className="table text-center m-0 list-unstyled">
+                                    <ul className="table text-center m-0 list-unstyled row">
+                                        <div className="input-group col-5">
+                                            <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" /><button className="btn btn-outline-secondary" type="button" id="button-addon2">
+                                                <i className="bi bi-search" />
+                                            </button>
+                                        </div>
+                                        <div className="input-group col-3">
+                                            <select className="form-select" aria-label="Default select example" onChange={(e) => this.onSelectStatus(e)}>
+                                                <option value={1} defaultValue={true} >All</option>
+                                                <option value='show'>Show</option>
+                                                <option value="hide">Hide</option>
+                                            </select>
+                                        </div>
                                         <button type="submit"
-                                            className="btn btn-success col-10    "
+                                            className="btn btn-success col-3"
                                             onClick={() => this.setState({
                                                 open1: true
                                             })}>
                                             Add foods
                                             </button>
+
                                         <Modal
                                             open={this.state.open1}
                                             aria-labelledby="simple-modal-title"
@@ -471,6 +476,7 @@ class ManageFood extends Component {
                                                                     <input name="proteins" type="text" onChange={(e) => this.onInput(e)} />
                                                                     <p className="d-inline text-danger ml-2">{this.state.proteinsErr}</p>
                                                                 </div>
+
                                                             </div>
                                                             <div className="modal-footer">
                                                                 <button type="submit" className="btn btn-secondary" data-dismiss="modal"
@@ -492,10 +498,9 @@ class ManageFood extends Component {
                                                 </div>
                                             </form>
                                         </Modal>
-                                    
+
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -512,12 +517,8 @@ class ManageFood extends Component {
                                                 <th className="border-top-0 text-left">Carbs</th>
                                                 <th className="border-top-0 text-left">Fats</th>
                                                 <th className="border-top-0 text-left">Proteins</th>
-                                                <th className="border-top-0 text-left col-2">
-                                                    <select className="form-select" aria-label="Default select example" onChange={(e) => this.onSelectStatus(e)}>
-                                                        <option value={1} defaultValue={true} >All</option>
-                                                        <option value='show'>Show</option>
-                                                        <option value="hide">Hide</option>
-                                                    </select>
+                                                <th className="border-top-0 text-left ">
+                                                    Status
                                                 </th>
                                                 <th className="border-top-0 ">Action</th>
                                                 <th className="border-top-0 text-left">Edit</th>
@@ -525,6 +526,7 @@ class ManageFood extends Component {
                                             </tr>
                                         </thead>
                                         <tbody>
+
                                             {this.renderFood()}
                                         </tbody>
                                     </table>
@@ -535,12 +537,31 @@ class ManageFood extends Component {
                     <div className="row">
                         <ul className="pagination justify-content-start col-6">
                             <li className={this.state.page > 1 ? 'page-item col-2 ml-4 text-center' : 'page-item col-2 disabled ml-4 text-center'}>
-                                <Link to={`/admin/food/page${this.state.page - 1}`} className="page-link" onClick={() => this.onPreviousPage()}>Previous</Link>
+                                <Link
+                                    to={`/admin/food/page${this.state.page - 1}`}
+                                    className="page-link"
+                                    onClick={() => this.onPreviousPage()}>Previous</Link>
                             </li>
                         </ul>
                         <ul className="pagination justify-content-end col-6">
                             <li className="page-item col-2 text-center">
-                                <Link to={`/admin/food/page${this.state.page + 1}`} className="page-link text-center" onClick={() => this.onNextPage()}>Next</Link>
+                                <Link
+                                    to={`/admin/food/page${this.state.page + 1}`}
+                                    className="page-link t
+                                ext-center"  onClick={() => this.onNextPage()} >Next
+                                
+                                </Link>
+                                <ToastContainer
+                                    position="top-right"
+                                    autoClose={3000}
+                                    hideProgressBar={false}
+                                    newestOnTop={false}
+                                    closeOnClick
+                                    rtl={false}
+                                    pauseOnFocusLoss
+                                    draggable
+                                    pauseOnHover
+                                />
                             </li>
                         </ul>
                     </div>

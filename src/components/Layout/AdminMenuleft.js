@@ -65,8 +65,8 @@ class AdminMenuleft extends Component {
                                             isActive: 3
                                         })}
                                     >
-                                        <span className="me-2"><i className="fas fa-utensils" /></span>
-                                        <span className="btn-lg ml-2 ">Manage food</span>
+                                        <span className=""><i className="fas fa-utensils" /></span>
+                                        <span className="btn-lg">Manage dishes</span>
 
                                     </Link>
 

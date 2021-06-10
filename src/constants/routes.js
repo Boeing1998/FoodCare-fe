@@ -12,6 +12,8 @@ const USER_ROUTES = {
     CREATEFOODS :`${API}/food/create`,
     DELETEFOODS :`${API}/food/delete/`,
     EDITFOOD :`${API}/food/admin/edit`,
+    LISTUSER : `${API}/user/admin/show`,
+    BANUSER : `${API}/user`
 }
 
 export { API, USER_ROUTES }

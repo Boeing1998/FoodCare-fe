@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Switch, Route, Link, withRouter } from "react-
 
 class Index extends Component {
     render() {
+        
         if (localStorage.getItem('token') !== null && localStorage.getItem('admin') == 'admin') {
             return (
                 <div>

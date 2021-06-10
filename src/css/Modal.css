@@ -38,5 +38,7 @@
 div#check{
     /* position: unset !important; */
     opacity: 0.4;
+    top: 32%;
+    left: 3%;
 }
   
