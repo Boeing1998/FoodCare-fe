@@ -24,7 +24,7 @@ class ManageFood extends Component {
         this.state = {
             data: [], data1: {}, page: 1, open: false, open1: false, food_name: '', calories: '', carbs: '', fats: '', proteins: '',
             food_nameErr: '', caloriesErr: '', carbsErr: '', fatsErr: '', proteinsErr: '', noti: '', images: {}, thumbnail: '',
-            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter: [], custom: true, request: true
+            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter: [], custom: true, request: true, isLoading : false
         }
     }
     componentDidMount = async () => {
@@ -40,7 +40,7 @@ class ManageFood extends Component {
                 const randomData = _.shuffle(res.data.data)
                 this.setState({
                     data: randomData,
-                    dataFilter: randomData
+                    isLoading : true
                 })
             })
     }
@@ -320,22 +320,21 @@ class ManageFood extends Component {
     onSelectStatus = async (e) => {
         if (e.target.value == 1) {
             this.setState({
-                data: this.state.dataFilter
+                dataFilter: []
             })
         } else {
             this.setState({
-                data: this.state.dataFilter.filter((items) => items.status == e.target.value)
+                dataFilter: this.state.data.filter((items) => items.status == e.target.value)
             })
         }
     }
     renderFood() {
-        let data = this.state.data
+        let data = this.state.dataFilter.length == 0 ? this.state.data : this.state.dataFilter 
+        
         if (data) {
-            if (data.length > 0) {
+            if (this.state.isLoading == true) {
                 return data.map((key, index) => {
-                    console.log()
-                    return (
-                        <tr key={index}>
+                    return data.length != 0 ? <tr key={index}>
                             <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
                             <td className="text-left">{(key.nutrions.calories).toFixed(2)}</td>
@@ -380,19 +379,26 @@ class ManageFood extends Component {
                                 />
                             </td>
                         </tr>
-
-                    )
+                    :
+                    <tr>
+                    <div className="col-12" style={{ left: '250%', top: '6px' }}>
+                        <button className="btn btn-primary" type="button" disabled>
+                            <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
+                                        Not foods
+                                    </button>
+                    </div>
+                </tr>
                 })
             } else {
                 return <tr>
                     <div className="col-12" style={{ left: '250%', top: '6px' }}>
                         <button className="btn btn-primary" type="button" disabled>
                             <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
-                                        Loading...
+                                       Loading....
                                     </button>
                     </div>
                 </tr>
-            }
+            } 
         }
     }
     render() {

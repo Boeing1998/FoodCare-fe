@@ -9,7 +9,7 @@ class TaskManager extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: [], data1: {}, request: '', custom: '', message: '', page: 0
+            data: [], data1: {}, request: '', custom: '', message: '', page: 0, isLoading: false
         }
     }
     // componentDidMount = async () => {
@@ -42,6 +42,7 @@ class TaskManager extends Component {
                 const orderBy = _.orderBy(res.data.data, ['created_at'], ['desc'])
                 this.setState({
                     data: orderBy,
+                    isLoading: true
                 })
             })
     }
@@ -198,12 +199,10 @@ class TaskManager extends Component {
     renderFood() {
         let data = this.state.data
         if (data) {
-            if (data.length > 0) {
-                return data.map((key, index) => {
-                    
-                    return (
-                        // className={key.custom == true ? `d-block` : 'd-none'}
-                        <tr key={index} >
+            if (this.state.isLoading == true) {
+                if (data.length > 0) {
+                    return data.map((key, index) => {
+                        return <tr key={index} >
                             <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
                             <td className="text-left">{key.nutrions.calories}</td>
@@ -228,17 +227,25 @@ class TaskManager extends Component {
                             </td>
                         </tr>
 
-                    )
-                })
+                    })
+
+                } else {
+                    return <tr>
+                        <div className="col-12" style={{ left: '140%', top: '1px', fontSize: "20px" }}>
+                            <p className="text-danger">Food is empty</p>
+                        </div>
+                    </tr>
+                }
+
             } else {
-                return  <tr>
-                <div className="col-12" style={{ left: '160%', top: '1px' }}>
-                    <button className="btn btn-primary" type="button" disabled>
-                        <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
-        Loading...
-    </button>
-                </div>
-            </tr>
+                return <tr>
+                    <div className="col-12" style={{ left: '160%', top: '1px' }}>
+                        <button className="btn btn-primary" type="button" disabled>
+                            <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
+            Loading...
+        </button>
+                    </div>
+                </tr>
             }
         }
     }
@@ -272,7 +279,7 @@ class TaskManager extends Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                           
+
                                             {this.renderFood()}
                                         </tbody>
                                     </table>

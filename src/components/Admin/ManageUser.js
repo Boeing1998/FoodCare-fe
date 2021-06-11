@@ -5,6 +5,12 @@ import { Modal } from '@material-ui/core'
 import '../../css/ManageUser.css'
 import '../../css/Modal.css'
 import { Link, withRouter } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const ProcessingNotify = () => {
+    toast.error('🦄 Processing...', { position: "top-right", autoClose: 2000, hideProgressBar: false, closeOnClick: true, pauseOnHover: true, draggable: true, progress: undefined, });
+}
 class ManageUser extends Component {
     constructor(props) {
         super(props)
@@ -110,25 +116,24 @@ class ManageUser extends Component {
 
     }
     onBanned = async (idUser) => {
-        console.log(idUser)
         const confiq = {
             headers: {
                 'Authorization': 'token ' + localStorage.getItem('token')
             }
         }
-        let key = `/${idUser}/ban`
-        axios.patch(USER_ROUTES.BANUSER + key, {}, confiq)
+        let key = await `/${idUser}/ban`
+        await axios.patch(USER_ROUTES.BANUSER + key, {}, confiq)
             .then(res => {
                 console.log(res.data)
             })
 
         let key1 = await `?&page=0&limit=6`
-        await axios.get(USER_ROUTES.LISTUSER + key1,{}, confiq)
-            .then(res => {
-                this.setState({
-                    data: res.data.data
+        await axios.get(USER_ROUTES.LISTUSER + key1, confiq)
+                .then(res => {
+                    this.setState({
+                        data: res.data.data
+                    })
                 })
-            })
     }
     renderData = () => {
         let data = this.state.data
@@ -137,12 +142,23 @@ class ManageUser extends Component {
                 return (
                         <tr key={index} >
                             <td><img src={key.avatarUrl} alt="#" style={{ width: '75px' }} /></td>
-                            <td>{key.email} {key.isBanned == true ? <b>(is Banned)</b> : null}</td>
+                            <td>{key.email} {key.isBanned == true ? <b className='text-danger'>(is Banned)</b> : null}</td>
                             <td >
                                 <a href=" "
                                     className="edit mr-3" data-toggle="modal" onClick={() => this.onBanned(key._id)}>
-                                    <i className="bi bi-x-circle-fill text-warning ml-3 " />
+                                    <i className="bi bi-x-circle-fill text-warning ml-3 " onClick={ProcessingNotify} />
                                 </a>
+                                <ToastContainer
+                                    position="top-right"
+                                    autoClose={5000}
+                                    hideProgressBar={false}
+                                    newestOnTop={false}
+                                    closeOnClick
+                                    rtl={false}
+                                    pauseOnFocusLoss
+                                    draggable
+                                    pauseOnHover
+                                />
                             </td>
                             <td >
                                 <a href=" "
