@@ -9,12 +9,6 @@ class AdminMenuleft extends Component {
             isActive: 1
         }
     }
-
-    onUpChervon = () => {
-        this.setState({
-            up: !this.state.up
-        })
-    }
     render() {
         return (
             <>
@@ -84,7 +78,7 @@ class AdminMenuleft extends Component {
                                             isActive: 4
                                         })}
                                     >
-                                        <span className="me-2"><i class="fas fa-tasks"/></span>
+                                        <span className="me-2"><i className="fas fa-tasks"/></span>
                                         <span className="btn-lg ml-1 ">Task Manager</span>
 
                                     </Link>
@@ -106,7 +100,3 @@ class AdminMenuleft extends Component {
 }
 
 export default AdminMenuleft
-{/* <span className="col-7"
-                                            style={{ display: 'inline-flex' }}>
-                                            <i class={`bi bi-chevron-${this.state.up !== false ? 'up' : 'down'} ml-auto`} onClick={() => this.onUpChervon()} />
-                                        </span> */}

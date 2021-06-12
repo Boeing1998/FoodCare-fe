@@ -24,7 +24,7 @@ class ManageFood extends Component {
         this.state = {
             data: [], data1: {}, page: 1, open: false, open1: false, food_name: '', calories: '', carbs: '', fats: '', proteins: '',
             food_nameErr: '', caloriesErr: '', carbsErr: '', fatsErr: '', proteinsErr: '', noti: '', images: {}, thumbnail: '',
-            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter: [], custom: true, request: true, isLoading : false
+            show: 'Active', hide: 'Unactive', status: '', checked: '', dataFilter: [], custom: true, request: true, isLoading: false
         }
     }
     componentDidMount = async () => {
@@ -40,13 +40,13 @@ class ManageFood extends Component {
                 const randomData = _.shuffle(res.data.data)
                 this.setState({
                     data: randomData,
-                    isLoading : true
+                    isLoading: true
                 })
             })
     }
 
     onNextPage = async () => {
-        
+
         await this.setState({
             page: this.state.page + 1
         })
@@ -102,6 +102,7 @@ class ManageFood extends Component {
         let key = await `?&page=${this.state.page}&type=all&limit=6`
         await axios.get(USER_ROUTES.FOODSFORADMIN + key, confiq)
             .then(res => {
+                console.log(res.data)
                 this.setState({
                     data: res.data.data
                 })
@@ -209,7 +210,8 @@ class ManageFood extends Component {
     onModal = () => {
         let data = this.state.data1
         if (this.state.data1) {
-            return <Modal id="check"
+            return (
+                <Modal id="check"
                 open={this.state.open}
                 aria-hidden="true">
                 <form onSubmit={(e) => this.onEditFood(e, data._id)}>
@@ -258,6 +260,7 @@ class ManageFood extends Component {
                     </div>
                 </form>
             </Modal>
+            )
         }
     }
     onEditFood = async (e, idFood) => {
@@ -323,18 +326,26 @@ class ManageFood extends Component {
                 dataFilter: []
             })
         } else {
-            this.setState({
+            await this.setState({
                 dataFilter: this.state.data.filter((items) => items.status == e.target.value)
             })
+            if (this.state.dataFilter.length == 0) {
+                this.setState({
+                    dataFilter: [{
+                        name: 'a'
+                    }]
+                })
+            }
         }
     }
     renderFood() {
-        let data = this.state.dataFilter.length == 0 ? this.state.data : this.state.dataFilter 
-        
+        let data = this.state.dataFilter.length == 0 ? this.state.data : this.state.dataFilter
         if (data) {
             if (this.state.isLoading == true) {
-                return data.map((key, index) => {
-                    return data.length != 0 ? <tr key={index}>
+                if (this.state.dataFilter.length !== 1) {
+                    return data.map((key, index) => {
+                        return (
+                            <tr key={index}>
                             <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
                             <td className="text-left">{(key.nutrions.calories).toFixed(2)}</td>
@@ -379,59 +390,54 @@ class ManageFood extends Component {
                                 />
                             </td>
                         </tr>
-                    :
+                        )
+                    })
+                } 
+            } else {
+                return (
                     <tr>
                     <div className="col-12" style={{ left: '250%', top: '6px' }}>
                         <button className="btn btn-primary" type="button" disabled>
                             <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
-                                        Not foods
-                                    </button>
+                            Loading....
+                        </button>
                     </div>
                 </tr>
-                })
-            } else {
-                return <tr>
-                    <div className="col-12" style={{ left: '250%', top: '6px' }}>
-                        <button className="btn btn-primary" type="button" disabled>
-                            <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
-                                       Loading....
-                                    </button>
-                    </div>
-                </tr>
-            } 
+                )
+            }
         }
     }
     render() {
         return (
-            <section id="shopping-cart " style={{ marginLeft: '230px' }}>
+            <section id="shopping-cart " style={{ marginLeft: '230px'}}>
                 <div className="row g-0" >
                     <div className="col-12 ">
                         <div className="row border-0 bg-white">
                             <div className="card-content col-2 pt-5 pl-4">
-                                <h4 className="card-title">Manage Food</h4>
+                                <h4 className="card-title">Manage Dishes</h4>
                             </div>
                             <div className="card-content ml-auto col-4 pt-5 ">
                                 <div className="card-body table-responsive p-0">
                                     <ul className="table text-center m-0 list-unstyled row">
-                                        <div className="input-group col-5">
+                                        {/* <div className="input-group col-5">
                                             <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" /><button className="btn btn-outline-secondary" type="button" id="button-addon2">
                                                 <i className="bi bi-search" />
                                             </button>
-                                        </div>
-                                        <div className="input-group col-3">
+                                        </div> */}
+                                        <div className="input-group col-4">
                                             <select className="form-select" aria-label="Default select example" onChange={(e) => this.onSelectStatus(e)}>
                                                 <option value={1} defaultValue={true} >All</option>
-                                                <option value='show'>Show</option>
-                                                <option value="hide">Hide</option>
+                                                <option value='show'>Active</option>
+                                                <option value="hide">Unactive</option>
                                             </select>
                                         </div>
                                         <button type="submit"
-                                            className="btn btn-success col-3"
+                                            className="btn btn-success col-6"
                                             onClick={() => this.setState({
                                                 open1: true
                                             })}>
                                             Add foods
-                                            </button>
+                                        </button>
 
                                         <Modal
                                             open={this.state.open1}
@@ -504,7 +510,6 @@ class ManageFood extends Component {
                                                 </div>
                                             </form>
                                         </Modal>
-
                                     </ul>
                                 </div>
                             </div>
@@ -518,7 +523,7 @@ class ManageFood extends Component {
                                         <thead className="border-0">
                                             <tr className="border-top-0">
                                                 <th className="border-top-0 text-left">Image</th>
-                                                <th className="border-top-0 text-left">Product</th>
+                                                <th className="border-top-0 text-left">Dish</th>
                                                 <th className="border-top-0 text-left">Calories</th>
                                                 <th className="border-top-0 text-left">Carbs</th>
                                                 <th className="border-top-0 text-left">Fats</th>
@@ -550,24 +555,14 @@ class ManageFood extends Component {
                             </li>
                         </ul>
                         <ul className="pagination justify-content-end col-6">
-                            <li className="page-item col-2 text-center">
+                            <li className={this.state.data ==0  ? 'page-item col-2 ml-4 text-center disabled' : 'page-item col-2  ml-4 text-center'}>
                                 <Link
                                     to={`/admin/food/page${this.state.page + 1}`}
                                     className="page-link t
                                 ext-center"  onClick={() => this.onNextPage()} >Next
-                                
+
                                 </Link>
-                                <ToastContainer
-                                    position="top-right"
-                                    autoClose={3000}
-                                    hideProgressBar={false}
-                                    newestOnTop={false}
-                                    closeOnClick
-                                    rtl={false}
-                                    pauseOnFocusLoss
-                                    draggable
-                                    pauseOnHover
-                                />
+                                
                             </li>
                         </ul>
                     </div>

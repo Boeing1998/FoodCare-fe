@@ -28,9 +28,11 @@ class Index extends Component {
                 </div>
             )
         } else {
-            return <div className="auth-wrapper">
+            return (
+                <div className="auth-wrapper">
                 <Route path="/admin" component={Login} />
             </div>
+            )
 
 
 

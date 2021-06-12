@@ -16,7 +16,7 @@ class ManageUser extends Component {
         super(props)
         this.state = {
             data: [],
-            page: 1,
+            page: 0,
             hide: false,
             openModal: false,
             idUser: ''
@@ -37,8 +37,15 @@ class ManageUser extends Component {
             })
     }
     onPreviousPage = () => {
+        const confiq = {
+            headers: {
+                'Authorization': 'token ' + localStorage.getItem('token')
+            }
+        }
         this.setState({ page: this.state.page - 1 })
-        axios.get(`https://reqres.in/api/users?page=${this.state.page - 1}`)
+
+        let key = `?&page=${this.state.page - 1}&limit=6`
+        axios.get(USER_ROUTES.LISTUSER+key,confiq)
             .then(res => {
                 this.setState({
                     data: res.data.data
@@ -46,16 +53,22 @@ class ManageUser extends Component {
             })
     }
     onNextPage = () => {
+        const confiq = {
+            headers: {
+                'Authorization': 'token ' + localStorage.getItem('token')
+            }
+        }
         this.setState({ page: this.state.page + 1 })
-        axios.get(`https://reqres.in/api/users?page=${this.state.page + 1}`)
+        let key = `?&page=${this.state.page + 1}&limit=6`
+        axios.get(USER_ROUTES.LISTUSER+key,confiq)
             .then(res => {
+                console.log(res.data.data)
                 this.setState({
                     data: res.data.data
                 })
             })
     }
     onDeleteUser = async () => {
-
         const confiq = {
             headers: {
                 'Authorization': 'token ' + localStorage.getItem('token')
@@ -76,7 +89,8 @@ class ManageUser extends Component {
 
     }
     openModal = () => {
-        return <Modal
+        return (
+            <Modal
             open={this.state.openModal}
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description"
@@ -114,6 +128,8 @@ class ManageUser extends Component {
             </div>
         </Modal>
 
+        )
+        
     }
     onBanned = async (idUser) => {
         const confiq = {
@@ -129,57 +145,56 @@ class ManageUser extends Component {
 
         let key1 = await `?&page=0&limit=6`
         await axios.get(USER_ROUTES.LISTUSER + key1, confiq)
-                .then(res => {
-                    this.setState({
-                        data: res.data.data
-                    })
+            .then(res => {
+                this.setState({
+                    data: res.data.data
                 })
+            })
     }
     renderData = () => {
         let data = this.state.data
         if (data.length > 0) {
             return data.map((key, index) => {
                 return (
-                        <tr key={index} >
-                            <td><img src={key.avatarUrl} alt="#" style={{ width: '75px' }} /></td>
-                            <td>{key.email} {key.isBanned == true ? <b className='text-danger'>(is Banned)</b> : null}</td>
-                            <td >
-                                <a href=" "
-                                    className="edit mr-3" data-toggle="modal" onClick={() => this.onBanned(key._id)}>
-                                    <i className="bi bi-x-circle-fill text-warning ml-3 " onClick={ProcessingNotify} />
-                                </a>
-                                <ToastContainer
-                                    position="top-right"
-                                    autoClose={5000}
-                                    hideProgressBar={false}
-                                    newestOnTop={false}
-                                    closeOnClick
-                                    rtl={false}
-                                    pauseOnFocusLoss
-                                    draggable
-                                    pauseOnHover
-                                />
-                            </td>
-                            <td >
-                                <a href=" "
-                                    className="delete" data-toggle="modal"
-                                    onClick={() => this.setState({
-                                        openModal: true, idUser: key._id
-                                    })}>
-                                    <i className="bi bi-trash-fill text-danger ml-4" />
-                                </a>
-                                {this.openModal()}
-                            </td>
-                        </tr>
+                    <tr key={index} >
+                        <td><img src={key.avatarUrl} alt="#" style={{ width: '75px' }} /></td>
+                        <td>{key.email} {key.isBanned == true ? <b className='text-danger'>(is Banned)</b> : null}</td>
+                        <td >
+                            <a href=" "
+                                className="edit mr-3" data-toggle="modal" onClick={() => this.onBanned(key._id)}>
+                                <i className="bi bi-x-circle-fill text-warning ml-3 " onClick={ProcessingNotify} />
+                            </a>
+                            <ToastContainer
+                                position="top-right"
+                                autoClose={5000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                            />
+                        </td>
+                        <td >
+                            <a href=" "
+                                className="delete" data-toggle="modal"
+                                onClick={() => this.setState({
+                                    openModal: true, idUser: key._id
+                                })}>
+                                <i className="bi bi-trash-fill text-danger ml-4" />
+                            </a>
+                            {this.openModal()}
+                        </td>
+                    </tr>
                 )
             })
         } else {
-            return <div className="col-12"
-                style={{ left: '140%', top: '15px' }}>
-                <button className="btn btn-primary" type="button" disabled>
-                    <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
-                    Loading...
-                </button></div>
+            return (
+                <div className="col-12"
+                style={{ left: '110%', top: '15px' }}>
+               <p className="text-danger" style={{fontSize: "20px"}}>User's list are empty</p></div>
+            )
         }
     }
     render() {
@@ -212,24 +227,23 @@ class ManageUser extends Component {
                     </div>
                 </div>
                 <div className="row">
-                        <ul className="pagination justify-content-start col-6">
-                            <li className={this.state.page > 1 ? 'page-item col-2 ml-4 text-center' : 'page-item col-2 disabled ml-4 text-center'}>
-                                <Link
-                                    to={`/admin/user/page${this.state.page - 1}`}
-                                    className="page-link"
-                                    onClick={() => this.onPreviousPage()}>Previous</Link>
-                            </li>
-                        </ul>
-                        <ul className="pagination justify-content-end col-6">
-                            <li className="page-item col-2 text-center">
-                                <Link
-                                    to={`/admin/user/page${this.state.page + 1}`}
-                                    className="page-link text-center"  onClick={() => this.onNextPage()} >Next
-                                
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    <ul className="pagination justify-content-start col-6">
+                        <li className={this.state.page > 0 ? 'page-item col-2 text-center' : 'page-item col-2 disabled  text-center'}>
+                            <Link
+                                to={`/admin/user`}
+                                className="page-link text-center"
+                                onClick={() => this.onPreviousPage()}>Previous</Link>
+                        </li>
+                    </ul>
+                    <ul className="pagination justify-content-end col-6">
+                        <li className={this.state.data == 0 ?  "page-item col-2 text-center disabled" : "page-item col-2 text-center" } >
+                            <Link
+                                to={`/admin/user/page${this.state.page + 1}`}
+                                className="page-link text-center" onClick={() => this.onNextPage()} >Next
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
             </div>
         )
     }

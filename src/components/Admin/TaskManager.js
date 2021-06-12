@@ -202,7 +202,8 @@ class TaskManager extends Component {
             if (this.state.isLoading == true) {
                 if (data.length > 0) {
                     return data.map((key, index) => {
-                        return <tr key={index} >
+                        return (
+                            <tr key={index} >
                             <td className="text-left" ><img src={key.image} style={{ width: '80px', height: '80px' }} /></td>
                             <td className="text-left" >{key.food_name}</td>
                             <td className="text-left">{key.nutrions.calories}</td>
@@ -226,19 +227,23 @@ class TaskManager extends Component {
 
                             </td>
                         </tr>
+                        )
 
                     })
 
                 } else {
-                    return <tr>
+                    return (
+                        <tr>
                         <div className="col-12" style={{ left: '140%', top: '1px', fontSize: "20px" }}>
                             <p className="text-danger">Food is empty</p>
                         </div>
                     </tr>
+                    )
                 }
 
             } else {
-                return <tr>
+                return (
+                    <tr>
                     <div className="col-12" style={{ left: '160%', top: '1px' }}>
                         <button className="btn btn-primary" type="button" disabled>
                             <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" />
@@ -246,12 +251,13 @@ class TaskManager extends Component {
         </button>
                     </div>
                 </tr>
+                )
             }
         }
     }
     render() {
         return (
-            <section id="shopping-cart " style={{ marginLeft: '230px' }}>
+            <section id="shopping-cart " style={{ marginLeft: '230px'}}>
                 <div className="row g-0" >
                     {/* g-0 == gutter = scrollX = 0  */}
                     <div className="col-12 ">
@@ -269,7 +275,7 @@ class TaskManager extends Component {
                                         <thead className="border-0">
                                             <tr className="border-top-0">
                                                 <th className="border-top-0 text-left">Image</th>
-                                                <th className="border-top-0 text-left">Product</th>
+                                                <th className="border-top-0 text-left">Dish</th>
                                                 <th className="border-top-0 text-left">Calories</th>
                                                 <th className="border-top-0 text-left">Carbs</th>
                                                 <th className="border-top-0 text-left">Fats</th>
